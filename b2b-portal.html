@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WholesalePro - Retailer Portal</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-light: #3b82f6;
+      --primary-dark: #1d4ed8;
+      --success: #10b981;
+      --success-dark: #059669;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface2: #f1f5f9;
+      --text: #0f172a;
+      --text2: #475569;
+      --text3: #94a3b8;
+      --border: #e2e8f0;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface2: #334155;
+      --text: #f8fafc;
+      --text2: #cbd5e1;
+      --text3: #64748b;
+      --border: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding-bottom: 80px; /* Space for floating cart */
+      transition: background-color 0.25s, color 0.25s;
+    }
+
+    /* Top bar */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 20px;
+      color: var(--primary);
+    }
+
+    .theme-toggle {
+      background: none;
+      border: none;
+      color: var(--text2);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 50%;
+    }
+
+    .theme-toggle:hover {
+      background: var(--surface2);
+      color: var(--text);
+    }
+
+    /* Container layout */
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px 16px;
+    }
+
+    /* Auth screen */
+    .auth-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-lg);
+      padding: 30px 24px;
+      margin-top: 40px;
+      text-align: center;
+    }
+
+    .auth-card h2 {
+      font-family: 'Outfit', sans-serif;
+      margin-bottom: 10px;
+      font-size: 26px;
+      font-weight: 700;
+    }
+
+    .auth-card p {
+      color: var(--text2);
+      margin-bottom: 24px;
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 16px;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text2);
+    }
+
+    .form-control {
+      width: 100%;
+      height: 48px;
+      padding: 10px 16px;
+      font-size: 15px;
+      font-family: inherit;
+      border-radius: var(--radius);
+      border: 1.5px solid var(--border);
+      background-color: var(--surface);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 48px;
+      padding: 10px 24px;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: var(--radius);
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s;
+      width: 100%;
+      font-family: inherit;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+    }
+
+    .btn-success {
+      background-color: var(--success);
+      color: #ffffff;
+    }
+
+    .btn-success:hover {
+      background-color: var(--success-dark);
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--text2);
+    }
+
+    .btn-outline:hover {
+      background-color: var(--surface2);
+      color: var(--text);
+    }
+
+    /* Customer info card */
+    .info-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .info-title {
+      font-size: 13px;
+      color: var(--text2);
+      font-weight: 600;
+    }
+
+    .info-value {
+      font-size: 20px;
+      font-weight: 700;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .ledger-cr {
+      color: var(--success);
+    }
+
+    .ledger-dr {
+      color: var(--danger);
+    }
+
+    /* Products grid */
+    .catalog-header {
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .search-input-wrapper {
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 44px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 16px;
+      font-size: 14px;
+      background: var(--surface);
+      color: var(--text);
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+    }
+
+    .category-tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+
+    .category-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .cat-tab {
+      padding: 6px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      color: var(--text2);
+    }
+
+    .cat-tab.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .product-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    @media (min-width: 600px) {
+      .product-list {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .product-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+      position: relative;
+      box-shadow: var(--shadow);
+    }
+
+    .prod-details h3 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .prod-meta {
+      font-size: 11px;
+      color: var(--text3);
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .prod-price {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary);
+      font-family: 'Outfit', sans-serif;
+      margin-top: 4px;
+    }
+
+    .qty-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .qty-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+    }
+
+    .qty-btn:hover {
+      background: var(--surface2);
+    }
+
+    .qty-val {
+      font-weight: 700;
+      font-size: 15px;
+      width: 24px;
+      text-align: center;
+    }
+
+    .stock-badge {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+
+    .in-stock {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .out-stock {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    /* Floating Cart Drawer */
+    .cart-drawer-trigger {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 32px);
+      max-width: 500px;
+      background: var(--primary);
+      color: #fff;
+      padding: 16px 20px;
+      border-radius: 30px;
+      box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      z-index: 99;
+      animation: slideUp 0.3s ease;
+      font-weight: 700;
+    }
+
+    @keyframes slideUp {
+      from { transform: translate(-50%, 100px); opacity: 0; }
+      to { transform: translate(-50%, 0); opacity: 1; }
+    }
+
+    .cart-drawer-trigger:hover {
+      background: var(--primary-dark);
+    }
+
+    /* Cart Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      animation: fadeIn 0.25s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .cart-modal {
+      background: var(--surface);
+      border-radius: var(--radius) var(--radius) 0 0;
+      width: 100%;
+      max-width: 600px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      animation: slideModalUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes slideModalUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h2 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .close-modal-btn {
+      background: none;
+      border: none;
+      color: var(--text2);
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cart-item-info h4 {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .cart-item-info p {
+      font-size: 12px;
+      color: var(--text3);
+    }
+
+    .cart-total-section {
+      margin-top: 16px;
+      background: var(--surface2);
+      padding: 16px;
+      border-radius: var(--radius);
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .modal-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Loader / Alerts */
+    .spinner {
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top: 3px solid #fff;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      text-align: left;
+    }
+
+    .alert-danger {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+
+    .alert-success {
+      background: #dcfce7;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CONFIGURATION BLOCK: SET YOUR SUPABASE CREDENTIALS HERE OR merchant WILL LINK THEM -->
+  <script>
+    // ==========================================
+    // CONFIGURATION: Enter your Supabase credentials here
+    // ==========================================
+    const CLOUD_DB_URL = "https://your-project.supabase.co"; // Replace with your URL
+    const CLOUD_API_KEY = "your-anon-key"; // Replace with your Anon Key
+    // ==========================================
+  </script>
+
+  <header>
+    <div class="brand">🤝 WholesalePro Retailer Link</div>
+    <button class="theme-toggle" onclick="toggleTheme()" id="btn-theme">🌙</button>
+  </header>
+
+  <div class="container" id="app">
+    <!-- Screen content injected dynamically -->
+  </div>
+
+  <!-- Dialog / Cart overlay -->
+  <div id="modal-container"></div>
+
+  <script>
+    // Theme Management
+    if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      document.getElementById('btn-theme').textContent = '☀️';
+    }
+
+    function toggleTheme() {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      if (isDark) {
+        document.documentElement.removeAttribute('data-theme');
+        localStorage.setItem('theme', 'light');
+        document.getElementById('btn-theme').textContent = '🌙';
+      } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+        document.getElementById('btn-theme').textContent = '☀️';
+      }
+    }
+
+    // App state
+    let customer = null;
+    let products = [];
+    let cart = {};
+    let activeCategory = 'All';
+    let searchQuery = '';
+
+    // Init App
+    window.addEventListener('load', () => {
+      // Check config
+      if (CLOUD_DB_URL.includes("your-project.supabase.co")) {
+        renderNotConfiguredError();
+        return;
+      }
+      
+      // Check session
+      const cached = localStorage.getItem('b2b_customer');
+      if (cached) {
+        customer = JSON.parse(cached);
+        loadPortalData();
+      } else {
+        renderLogin();
+      }
+    });
+
+    function renderNotConfiguredError() {
+      document.getElementById('app').innerHTML = `
+        <div class="auth-card" style="border-color: var(--danger)">
+          <h2 style="color: var(--danger)">⚠️ Portal Configuration Required</h2>
+          <p style="margin: 16px 0; font-size: 14px;">
+            This B2B Retailer Portal page must be configured with your Supabase credentials. 
+            Open the <strong>b2b-portal.html</strong> file in a text editor and fill in the <code>CLOUD_DB_URL</code> and <code>CLOUD_API_KEY</code> values.
+          </p>
+        </div>
+      `;
+    }
+
+    // Login Screen
+    function renderLogin(err = '') {
+      document.getElementById('app').innerHTML = `
+        <div class="auth-card">
+          <h2>Retailer Login</h2>
+          <p>Sign in using your Customer Code and Registered Phone number to check balance and place orders.</p>
+          
+          ${err ? `<div class="alert alert-danger">${err}</div>` : ''}
+          
+          <form onsubmit="handleLogin(event)">
+            <div class="form-group">
+              <label>Customer Code</label>
+              <input type="text" id="login-code" class="form-control" placeholder="e.g. CUS-102" required autocomplete="username">
+            </div>
+            <div class="form-group">
+              <label>Registered Phone Number</label>
+              <input type="tel" id="login-phone" class="form-control" placeholder="e.g. +923001234567" required autocomplete="tel">
+            </div>
+            <button type="submit" class="btn btn-primary" id="btn-login">Login Securely</button>
+          </form>
+        </div>
+      `;
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const code = document.getElementById('login-code').value.trim();
+      const phone = document.getElementById('login-phone').value.trim();
+      
+      const btn = document.getElementById('btn-login');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Logging in...';
+      
+      try {
+        const res = await callCloud(`b2b_customers?code=eq.${code}`, 'GET');
+        if (Array.isArray(res) && res.length > 0) {
+          // Normalize phone inputs to compare
+          const match = res.find(c => {
+            const p1 = (c.phone || '').replace(/\D/g, '');
+            const p2 = phone.replace(/\D/g, '');
+            return p1 === p2 || p1.includes(p2) || p2.includes(p1);
+          });
+          
+          if (match) {
+            customer = match;
+            localStorage.setItem('b2b_customer', JSON.stringify(customer));
+            loadPortalData();
+          } else {
+            renderLogin('Phone number does not match record.');
+          }
+        } else {
+          renderLogin('Invalid Customer Code.');
+        }
+      } catch (err) {
+        renderLogin('Network / connection failed: ' + err.message);
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('b2b_customer');
+      customer = null;
+      products = [];
+      cart = {};
+      renderLogin();
+    }
+
+    // Portal Dashboard
+    async function loadPortalData() {
+      renderLoading();
+      try {
+        // Fetch fresh customer details (balance, etc) and products list
+        const [custRes, prodRes] = await Promise.all([
+          callCloud(`b2b_customers?id=eq.${customer.id}`, 'GET'),
+          callCloud(`b2b_products?stock=gt.0`, 'GET')
+        ]);
+        
+        if (custRes && custRes[0]) {
+          customer = custRes[0];
+          localStorage.setItem('b2b_customer', JSON.stringify(customer));
+        }
+        products = Array.isArray(prodRes) ? prodRes : [];
+        renderDashboard();
+      } catch (err) {
+        document.getElementById('app').innerHTML = `
+          <div class="auth-card" style="border-color: var(--danger)">
+            <h2 style="color: var(--danger)">⚠️ Fetch Failed</h2>
+            <p style="margin-bottom: 20px;">Could not connect to the B2B cloud server. Check your network connection.</p>
+            <button class="btn btn-primary" onclick="loadPortalData()">Try Again</button>
+            <button class="btn btn-outline" onclick="logout()" style="margin-top:8px">Log Out</button>
+          </div>
+        `;
+      }
+    }
+
+    function renderLoading() {
+      document.getElementById('app').innerHTML = `
+        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:100px 0;">
+          <div class="spinner" style="border-top-color: var(--primary); width: 40px; height: 40px;"></div>
+          <p style="margin-top:16px; font-weight:600; color:var(--text2)">Loading retail system catalog...</p>
+        </div>
+      `;
+    }
+
+    function renderDashboard() {
+      // Filter products
+      let filteredProds = products;
+      if (activeCategory !== 'All') {
+        filteredProds = filteredProds.filter(p => p.category === activeCategory);
+      }
+      if (searchQuery) {
+        const s = searchQuery.toLowerCase();
+        filteredProds = filteredProds.filter(p => p.name.toLowerCase().includes(s) || (p.sku && p.sku.toLowerCase().includes(s)));
+      }
+
+      // Collect categories
+      const categories = ['All', ...new Set(products.map(p => p.category).filter(Boolean))];
+
+      // Format balance
+      const balance = Number(customer.balance || 0);
+      const isOverdue = balance > 0;
+      
+      let html = `
+        <!-- HEADER INFORMATION -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap">
+          <div>
+            <h2>${customer.name}</h2>
+            <p style="font-size:12px; color:var(--text2)">Retailer Code: <strong>${customer.code}</strong></p>
+          </div>
+          <button class="btn btn-outline" onclick="logout()" style="width:auto; height:34px; font-size:12px; padding:0 12px">Log Out</button>
+        </div>
+
+        <div class="info-card">
+          <div>
+            <div class="info-title">Outstanding Balance Ledger</div>
+            <div class="info-value ${isOverdue ? 'ledger-dr' : 'ledger-cr'}">
+              ${isOverdue ? 'DR' : 'CR'} PKR ${Math.abs(balance).toLocaleString('en-PK', {minimumFractionDigits:2})}
+            </div>
+          </div>
+          <div style="font-size:12px; color:var(--text2); max-width:300px; text-align:right">
+            ${isOverdue ? '⚠️ Please clear your outstanding balance to avoid shipping delays.' : '✅ Ledger is fully cleared. Thank you!'}
+          </div>
+        </div>
+
+        <!-- SEARCH AND CATEGORIES -->
+        <div class="catalog-header">
+          <div class="search-input-wrapper">
+            <input type="text" class="search-input" placeholder="Search product name or SKU..." value="${searchQuery}" oninput="handleSearch(this.value)">
+          </div>
+          <div class="category-tabs">
+            ${categories.map(cat => `
+              <button class="cat-tab ${activeCategory === cat ? 'active' : ''}" onclick="selectCategory('${cat}')">${cat}</button>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- PRODUCT LIST -->
+        <h3 style="margin-bottom:12px; font-family:'Outfit', sans-serif">Product Catalog</h3>
+        <div class="product-list">
+          ${filteredProds.length === 0 ? `
+            <div style="grid-column: span 2; text-align:center; padding:40px; color:var(--text3)">No products available.</div>
+          ` : filteredProds.map(p => {
+            const inCart = cart[p.id] || 0;
+            return `
+              <div class="product-card">
+                <span class="stock-badge in-stock">Stock: ${p.stock}</span>
+                <div class="prod-details">
+                  <div class="prod-meta">${p.category || 'General'}</div>
+                  <h3>${p.name}</h3>
+                  <div class="prod-meta" style="color:var(--text3)">SKU: ${p.sku || '-'} | Unit: ${p.unit || 'Pcs'}</div>
+                  <div class="prod-price">PKR ${Number(p.price).toLocaleString()}</div>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px">
+                  <div></div>
+                  <div class="qty-controls">
+                    ${inCart > 0 ? `
+                      <button class="qty-btn" onclick="updateCartItem('${p.id}', ${inCart - 1})">-</button>
+                      <span class="qty-val">${inCart}</span>
+                    ` : ''}
+                    <button class="qty-btn" style="background:var(--primary);color:#fff;border-color:var(--primary)" onclick="updateCartItem('${p.id}', ${inCart + 1})">+</button>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+
+      document.getElementById('app').innerHTML = html;
+      renderFloatingCart();
+    }
+
+    function handleSearch(val) {
+      searchQuery = val.trim();
+      renderDashboard();
+    }
+
+    function selectCategory(cat) {
+      activeCategory = cat;
+      renderDashboard();
+    }
+
+    // Cart Management
+    function updateCartItem(id, qty) {
+      const prod = products.find(p => p.id === id);
+      if (!prod) return;
+      
+      if (qty <= 0) {
+        delete cart[id];
+      } else {
+        if (qty > prod.stock) {
+          alert(`Only ${prod.stock} units are available in stock.`);
+          cart[id] = prod.stock;
+        } else {
+          cart[id] = qty;
+        }
+      }
+      
+      renderDashboard();
+    }
+
+    function getCartTotal() {
+      let total = 0;
+      let count = 0;
+      for (const [id, qty] of Object.entries(cart)) {
+        const prod = products.find(p => p.id === id);
+        if (prod) {
+          total += prod.price * qty;
+          count += qty;
+        }
+      }
+      return { total, count };
+    }
+
+    function renderFloatingCart() {
+      const { total, count } = getCartTotal();
+      const existing = document.getElementById('floating-cart-drawer');
+      
+      if (count === 0) {
+        if (existing) existing.remove();
+        return;
+      }
+
+      const html = `
+        <div class="cart-drawer-trigger" id="floating-cart-drawer" onclick="openCartModal()">
+          <div style="display:flex; align-items:center; gap:8px">
+            🛒 <span>${count} items</span>
+          </div>
+          <div>Review Order: PKR ${total.toLocaleString()} ➔</div>
+        </div>
+      `;
+
+      if (existing) {
+        existing.outerHTML = html;
+      } else {
+        document.body.insertAdjacentHTML('beforeend', html);
+      }
+    }
+
+    function openCartModal() {
+      const { total } = getCartTotal();
+      let cartItemsHtml = '';
+      
+      for (const [id, qty] of Object.entries(cart)) {
+        const prod = products.find(p => p.id === id);
+        if (prod) {
+          cartItemsHtml += `
+            <div class="cart-item">
+              <div class="cart-item-info">
+                <h4>${prod.name}</h4>
+                <p>PKR ${prod.price.toLocaleString()} &times; ${qty}</p>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px">
+                <div class="qty-controls">
+                  <button class="qty-btn" onclick="updateCartItemModal('${prod.id}', ${qty - 1})">-</button>
+                  <span class="qty-val">${qty}</span>
+                  <button class="qty-btn" onclick="updateCartItemModal('${prod.id}', ${qty + 1})">+</button>
+                </div>
+                <div class="font-bold" style="width:90px; text-align:right">PKR ${(prod.price * qty).toLocaleString()}</div>
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      document.getElementById('modal-container').innerHTML = `
+        <div class="modal-overlay" onclick="closeCartModal(event)">
+          <div class="cart-modal">
+            <div class="modal-header">
+              <h2>🛒 Shopping Basket</h2>
+              <button class="close-modal-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+              ${cartItemsHtml}
+              <div class="cart-total-section">
+                <span>Total Amount:</span>
+                <span>PKR ${total.toLocaleString()}</span>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-primary" onclick="submitOrder()" id="btn-submit-order">🚀 Place Order & Sync</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function updateCartItemModal(id, qty) {
+      updateCartItem(id, qty);
+      const { count } = getCartTotal();
+      if (count === 0) {
+        closeModal();
+      } else {
+        openCartModal();
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('modal-container').innerHTML = '';
+    }
+
+    function closeCartModal(e) {
+      if (e.target.classList.contains('modal-overlay')) closeModal();
+    }
+
+    // Submit Order
+    async function submitOrder() {
+      const { total } = getCartTotal();
+      const btn = document.getElementById('btn-submit-order');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Syncing with supplier...';
+
+      // Generate order number
+      const orderNo = 'WEB-' + Date.now().toString().slice(-8);
+
+      // Build ordered items list
+      const itemsList = [];
+      for (const [id, qty] of Object.entries(cart)) {
+        const prod = products.find(p => p.id === id);
+        if (prod) {
+          itemsList.push({
+            item_id: prod.id,
+            desc: prod.name,
+            qty: qty,
+            price: prod.price,
+            total: prod.price * qty
+          });
+        }
+      }
+
+      const payload = {
+        order_no: orderNo,
+        customer_id: customer.id,
+        date: new Date().toISOString(),
+        items: itemsList,
+        total: total,
+        synced_to_local: false
+      };
+
+      try {
+        await callCloud('b2b_orders', 'POST', payload);
+        alert(`Order ${orderNo} submitted successfully! Your supplier will review and dispatch soon.`);
+        cart = {};
+        closeModal();
+        loadPortalData();
+      } catch (err) {
+        alert('Order Submission Failed: ' + err.message);
+        btn.disabled = false;
+        btn.textContent = 'Place Order & Sync';
+      }
+    }
+
+    // Pure fetch wrapper for Supabase REST API
+    async function callCloud(endpoint, method = 'GET', body = null) {
+      const url = `${CLOUD_DB_URL}/rest/v1/${endpoint}`;
+      const headers = {
+        'Content-Type': 'application/json',
+        'apikey': CLOUD_API_KEY,
+        'Authorization': `Bearer ${CLOUD_API_KEY}`
+      };
+
+      const opts = { method, headers };
+      if (body) {
+        opts.body = JSON.stringify(body);
+        if (method === 'POST') {
+          headers['Prefer'] = 'return=representation';
+        }
+      }
+
+      const res = await fetch(url, opts);
+      if (!res.ok) {
+        const errText = await res.text().catch(() => '');
+        throw new Error(errText || `HTTP ${res.status}`);
+      }
+      
+      const text = await res.text();
+      return text ? JSON.parse(text) : null;
+    }
+  </script>
+</body>
+</html>
