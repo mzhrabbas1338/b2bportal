@@ -571,6 +571,7 @@
     // ==========================================
    const CLOUD_DB_URL = "https://dfjfgnfvanudjzjsikur.supabase.co"; // Replace with your URL
     const CLOUD_API_KEY = "sb_publishable_b1-6VzQoaxKh1aZ4X4ValA_TRLsv_07"; // Replace with your Anon Key
+
     // ==========================================
   </script>
 
@@ -813,12 +814,9 @@
             </div>
           ` : filteredProds.map(p => {
             const inCart = cart[p.id] || 0;
-            const isAvailable = Number(p.stock || 0) > 0;
             return `
               <div class="product-card">
-                <span class="stock-badge ${isAvailable ? 'in-stock' : 'out-stock'}">
-                  ${isAvailable ? `Available: ${p.stock}` : 'Out of Stock'}
-                </span>
+                <span class="stock-badge in-stock">Available</span>
                 <div class="prod-details">
                   <div class="prod-meta">${p.category || 'General'}</div>
                   <h3>${p.name}</h3>
@@ -832,11 +830,7 @@
                       <button class="qty-btn" onclick="updateCartItem('${p.id}', ${inCart - 1})">-</button>
                       <span class="qty-val">${inCart}</span>
                     ` : ''}
-                    ${isAvailable ? `
-                      <button class="qty-btn" style="background:var(--primary);color:#fff;border-color:var(--primary)" onclick="updateCartItem('${p.id}', ${inCart + 1})">+</button>
-                    ` : `
-                      <button class="qty-btn" style="background:var(--text3);color:#fff;border-color:var(--text3);cursor:not-allowed;" disabled>+</button>
-                    `}
+                    <button class="qty-btn" style="background:var(--primary);color:#fff;border-color:var(--primary)" onclick="updateCartItem('${p.id}', ${inCart + 1})">+</button>
                   </div>
                 </div>
               </div>
@@ -884,12 +878,7 @@
       if (qty <= 0) {
         delete cart[id];
       } else {
-        if (qty > prod.stock) {
-          alert(`Only ${prod.stock} units are available in stock.`);
-          cart[id] = prod.stock;
-        } else {
-          cart[id] = qty;
-        }
+        cart[id] = qty;
       }
       
       renderDashboard();
