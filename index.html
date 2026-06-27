@@ -569,7 +569,7 @@
     // ==========================================
     // CONFIGURATION: Enter your Supabase credentials here
     // ==========================================
-    const CLOUD_DB_URL = "https://dfjfgnfvanudjzjsikur.supabase.co"; // Replace with your URL
+  const CLOUD_DB_URL = "https://dfjfgnfvanudjzjsikur.supabase.co"; // Replace with your URL
     const CLOUD_API_KEY = "sb_publishable_b1-6VzQoaxKh1aZ4X4ValA_TRLsv_07"; // Replace with your Anon Key
     // ==========================================
   </script>
@@ -718,7 +718,7 @@
         // Fetch fresh customer details (balance, etc) and products list
         const [custRes, prodRes] = await Promise.all([
           callCloud(`b2b_customers?id=eq.${customer.id}`, 'GET'),
-          callCloud(`b2b_products?stock=gt.0`, 'GET')
+          callCloud(`b2b_products`, 'GET')
         ]);
         
         if (custRes && custRes[0]) {
@@ -750,7 +750,7 @@
 
     function renderDashboard() {
       // Filter products
-      let filteredProds = products;
+      let filteredProds = products.filter(p => !p.id.startsWith('onetime-'));
       if (activeCategory !== 'All') {
         filteredProds = filteredProds.filter(p => p.category === activeCategory);
       }
@@ -759,8 +759,8 @@
         filteredProds = filteredProds.filter(p => p.name.toLowerCase().includes(s) || (p.sku && p.sku.toLowerCase().includes(s)));
       }
 
-      // Collect categories
-      const categories = ['All', ...new Set(products.map(p => p.category).filter(Boolean))];
+      // Collect categories (excluding one-time custom items)
+      const categories = ['All', ...new Set(products.filter(p => !p.id.startsWith('onetime-')).map(p => p.category).filter(Boolean))];
 
       // Format balance
       const balance = Number(customer.balance || 0);
@@ -790,8 +790,9 @@
 
         <!-- SEARCH AND CATEGORIES -->
         <div class="catalog-header">
-          <div class="search-input-wrapper">
-            <input type="text" class="search-input" placeholder="Search product name or SKU..." value="${searchQuery}" oninput="handleSearch(this.value)">
+          <div class="search-input-wrapper" style="display:flex; gap:8px;">
+            <input type="text" class="search-input" placeholder="Search product name or SKU..." value="${searchQuery}" oninput="handleSearch(this.value)" style="flex:1;">
+            <button class="btn btn-outline" onclick="showAddCustomProductModal()" style="width:auto; height:44px; white-space:nowrap; padding:0 12px; font-size:13px;">➕ Custom Item</button>
           </div>
           <div class="category-tabs">
             ${categories.map(cat => `
@@ -804,12 +805,18 @@
         <h3 style="margin-bottom:12px; font-family:'Outfit', sans-serif">Product Catalog</h3>
         <div class="product-list">
           ${filteredProds.length === 0 ? `
-            <div style="grid-column: span 2; text-align:center; padding:40px; color:var(--text3)">No products available.</div>
+            <div style="grid-column: span 2; text-align:center; padding:40px; color:var(--text3)">
+              <p style="margin-bottom:12px;">No products available.</p>
+              <button class="btn btn-outline" onclick="showAddCustomProductModal()" style="width:auto; margin:0 auto;">➕ Add Custom / One-Time Product</button>
+            </div>
           ` : filteredProds.map(p => {
             const inCart = cart[p.id] || 0;
+            const isAvailable = Number(p.stock || 0) > 0;
             return `
               <div class="product-card">
-                <span class="stock-badge in-stock">Stock: ${p.stock}</span>
+                <span class="stock-badge ${isAvailable ? 'in-stock' : 'out-stock'}">
+                  ${isAvailable ? `Available: ${p.stock}` : 'Out of Stock'}
+                </span>
                 <div class="prod-details">
                   <div class="prod-meta">${p.category || 'General'}</div>
                   <h3>${p.name}</h3>
@@ -823,7 +830,11 @@
                       <button class="qty-btn" onclick="updateCartItem('${p.id}', ${inCart - 1})">-</button>
                       <span class="qty-val">${inCart}</span>
                     ` : ''}
-                    <button class="qty-btn" style="background:var(--primary);color:#fff;border-color:var(--primary)" onclick="updateCartItem('${p.id}', ${inCart + 1})">+</button>
+                    ${isAvailable ? `
+                      <button class="qty-btn" style="background:var(--primary);color:#fff;border-color:var(--primary)" onclick="updateCartItem('${p.id}', ${inCart + 1})">+</button>
+                    ` : `
+                      <button class="qty-btn" style="background:var(--text3);color:#fff;border-color:var(--text3);cursor:not-allowed;" disabled>+</button>
+                    `}
                   </div>
                 </div>
               </div>
@@ -969,6 +980,68 @@
       if (e.target.classList.contains('modal-overlay')) closeModal();
     }
 
+    function showAddCustomProductModal() {
+      document.getElementById('modal-container').innerHTML = `
+        <div class="modal-overlay" onclick="closeCustomProductModal(event)">
+          <div class="cart-modal" style="max-height: 500px; border-radius: var(--radius); margin: auto 16px;">
+            <div class="modal-header">
+              <h2>➕ Add Custom / One-Time Product</h2>
+              <button class="close-modal-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+              <form onsubmit="handleAddCustomProduct(event)">
+                <div class="form-group">
+                  <label>Product Name / Description *</label>
+                  <input type="text" id="custom-prod-name" class="form-control" placeholder="e.g. Custom Box / Special Item" required>
+                </div>
+                <div class="form-group" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                  <div>
+                    <label>Quantity *</label>
+                    <input type="number" id="custom-prod-qty" class="form-control" min="1" value="1" required>
+                  </div>
+                  <div>
+                    <label>Price Per Unit (PKR) *</label>
+                    <input type="number" id="custom-prod-price" class="form-control" min="0" step="any" placeholder="0" required>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="margin-top:16px;">Add to Basket</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function closeCustomProductModal(e) {
+      if (e.target.classList.contains('modal-overlay')) closeModal();
+    }
+
+    function handleAddCustomProduct(e) {
+      e.preventDefault();
+      const name = document.getElementById('custom-prod-name').value.trim();
+      const qty = parseInt(document.getElementById('custom-prod-qty').value) || 1;
+      const price = parseFloat(document.getElementById('custom-prod-price').value) || 0;
+
+      if (!name) return;
+
+      const customId = 'onetime-' + Date.now();
+      const tempProd = {
+        id: customId,
+        name: name,
+        price: price,
+        stock: 999999, // infinite for ordering
+        category: 'Custom',
+        sku: 'CUSTOM',
+        unit: 'Pcs'
+      };
+
+      products.push(tempProd);
+      cart[customId] = qty;
+
+      closeModal();
+      renderDashboard();
+    }
+
     // Submit Order
     async function submitOrder() {
       const { total } = getCartTotal();
@@ -985,7 +1058,7 @@
         const prod = products.find(p => p.id === id);
         if (prod) {
           itemsList.push({
-            item_id: prod.id,
+            item_id: prod.id.startsWith('onetime-') ? '' : prod.id,
             desc: prod.name,
             qty: qty,
             price: prod.price,
