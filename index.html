@@ -569,7 +569,7 @@
     // ==========================================
     // CONFIGURATION: Enter your Supabase credentials here
     // ==========================================
-  const CLOUD_DB_URL = "https://dfjfgnfvanudjzjsikur.supabase.co"; // Replace with your URL
+   const CLOUD_DB_URL = "https://dfjfgnfvanudjzjsikur.supabase.co"; // Replace with your URL
     const CLOUD_API_KEY = "sb_publishable_b1-6VzQoaxKh1aZ4X4ValA_TRLsv_07"; // Replace with your Anon Key
     // ==========================================
   </script>
@@ -755,8 +755,10 @@
         filteredProds = filteredProds.filter(p => p.category === activeCategory);
       }
       if (searchQuery) {
-        const s = searchQuery.toLowerCase();
-        filteredProds = filteredProds.filter(p => p.name.toLowerCase().includes(s) || (p.sku && p.sku.toLowerCase().includes(s)));
+        const s = searchQuery.trim().toLowerCase();
+        if (s) {
+          filteredProds = filteredProds.filter(p => p.name.toLowerCase().includes(s) || (p.sku && p.sku.toLowerCase().includes(s)));
+        }
       }
 
       // Collect categories (excluding one-time custom items)
@@ -791,7 +793,7 @@
         <!-- SEARCH AND CATEGORIES -->
         <div class="catalog-header">
           <div class="search-input-wrapper" style="display:flex; gap:8px;">
-            <input type="text" class="search-input" placeholder="Search product name or SKU..." value="${searchQuery}" oninput="handleSearch(this.value)" style="flex:1;">
+            <input type="text" id="search-input" class="search-input" placeholder="Search product name or SKU..." value="${searchQuery}" oninput="handleSearch(this.value)" style="flex:1;">
             <button class="btn btn-outline" onclick="showAddCustomProductModal()" style="width:auto; height:44px; white-space:nowrap; padding:0 12px; font-size:13px;">➕ Custom Item</button>
           </div>
           <div class="category-tabs">
@@ -843,12 +845,29 @@
         </div>
       `;
 
+      // Save input focus & selection
+      const searchInput = document.getElementById('search-input');
+      const searchFocused = searchInput === document.activeElement;
+      const selectionStart = searchFocused ? searchInput.selectionStart : null;
+      const selectionEnd = searchFocused ? searchInput.selectionEnd : null;
+
       document.getElementById('app').innerHTML = html;
       renderFloatingCart();
+
+      // Restore focus & cursor position
+      if (searchFocused) {
+        const input = document.getElementById('search-input');
+        if (input) {
+          input.focus();
+          if (selectionStart !== null && selectionEnd !== null) {
+            input.setSelectionRange(selectionStart, selectionEnd);
+          }
+        }
+      }
     }
 
     function handleSearch(val) {
-      searchQuery = val.trim();
+      searchQuery = val;
       renderDashboard();
     }
 
